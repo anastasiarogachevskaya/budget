@@ -29,6 +29,32 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
     }
   };
 
+  const handleSubmit = async (event: { preventDefault: () => void; }) => {
+    event.preventDefault();
+  
+    try {
+      const response = await fetch('/api/purchase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log('Purchase saved', data);
+      // Handle success, e.g., clear form, show success message
+    } catch (error) {
+      console.error('Failed to save purchase', error);
+      // Handle error, e.g., show error message to user
+    }
+  };
+  
+
   return (
     <Box component="form" noValidate autoComplete="off" maxWidth="40%" >
       <FormControl fullWidth sx={{ mt: 1 }}>
@@ -68,12 +94,13 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
           shrink: true,
         }}
       >
-        <MenuItem value="Person 1">Nastasija</MenuItem>
-        <MenuItem value="Person 2">Reysge</MenuItem>
+        <MenuItem value="A">Nastasija</MenuItem>
+        <MenuItem value="S">Reysge</MenuItem>
       </TextField>
       <FormControl fullWidth sx={{ mt: 1 }}>
         <InputLabel htmlFor="amount">Amount</InputLabel>
         <OutlinedInput
+          name='amount'
           id="amount"
           startAdornment={<InputAdornment position="start">€</InputAdornment>}
           label="Amount"
@@ -97,7 +124,7 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
         <MenuItem value="50">50%</MenuItem>
         <MenuItem value="100">100%</MenuItem>
       </TextField>
-      <Button variant="contained" onClick={() => {/* Submit logic here */}}>
+      <Button variant="contained" onClick={handleSubmit}>
         Submit
       </Button>
     </Box>
