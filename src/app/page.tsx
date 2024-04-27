@@ -1,9 +1,12 @@
 import type { NextPage } from 'next'
 import PurchaseForm from './components/PurchaseForm'
+import { Container } from '@mui/material'
 
 const Home: NextPage = () => {
   return (
-    <PurchaseForm />
+    <Container>
+      <PurchaseForm />
+    </Container>
   )
 }
 
