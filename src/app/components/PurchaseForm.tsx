@@ -5,6 +5,7 @@ import { TextField, MenuItem, Button, Box, FormControl, InputLabel, OutlinedInpu
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { fi } from 'date-fns/locale';
+import PlaceAutocomplete from './PlaceAutocomplete';
 
 interface PurchaseFormProps {
   // Interface details can be added here.
@@ -27,10 +28,12 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
     if (newValue !== null) {
       setFormData({ ...formData, purchaseDate: newValue });
     }
+    setFormData({ ...formData, purchaseDate: new Date() });
   };
 
   const handleSubmit = async (event: { preventDefault: () => void; }) => {
     event.preventDefault();
+    console.log(formData);
   
     try {
       const response = await fetch('/api/purchase', {
@@ -68,7 +71,7 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
           />
         </LocalizationProvider>
       </FormControl>
-      <FormControl fullWidth sx={{ mt: 1 }}>
+      {/* <FormControl fullWidth sx={{ mt: 1 }}>
         <TextField
           name="place"
           fullWidth
@@ -80,6 +83,9 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
             shrink: true,
           }}
         />
+      </FormControl> */}
+      <FormControl fullWidth sx={{ mt: 2 }}>
+        <PlaceAutocomplete formData={formData} setFormData={setFormData} />
       </FormControl>
 
       <TextField
