@@ -23,7 +23,7 @@ export default async function handler(
       const { purchaseDate, place, buyer, amount, splitPercentage } = req.body;
 
       const client = await clientPromise;
-      const db = client.db(); // Replace with your database name if not using the default
+      const db = client.db();
       
       const result = await db.collection('budget').insertOne({
         purchaseDate,

@@ -28,12 +28,10 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
     if (newValue !== null) {
       setFormData({ ...formData, purchaseDate: newValue });
     }
-    setFormData({ ...formData, purchaseDate: new Date() });
   };
 
   const handleSubmit = async (event: { preventDefault: () => void; }) => {
     event.preventDefault();
-    console.log(formData);
   
     try {
       const response = await fetch('/api/purchase', {
@@ -49,8 +47,12 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
       }
   
       const data = await response.json();
-      console.log('Purchase saved', data);
       // Handle success, e.g., clear form, show success message
+      setFormData({
+        ...formData,
+        place: '', // Clear the 'Place' field
+        amount: '', // Clear the 'amount' field
+      });
     } catch (error) {
       console.error('Failed to save purchase', error);
       // Handle error, e.g., show error message to user
@@ -59,7 +61,7 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
   
 
   return (
-    <Box component="form" noValidate autoComplete="off" maxWidth="40%" >
+    <Box component="form" noValidate autoComplete="off" maxWidth="40%">
       <FormControl fullWidth sx={{ mt: 1 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fi}>
           <DatePicker
@@ -71,19 +73,6 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
           />
         </LocalizationProvider>
       </FormControl>
-      {/* <FormControl fullWidth sx={{ mt: 1 }}>
-        <TextField
-          name="place"
-          fullWidth
-          label="Place"
-          value={formData.place}
-          onChange={handleInputChange}
-          margin="normal"
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </FormControl> */}
       <FormControl fullWidth sx={{ mt: 2 }}>
         <PlaceAutocomplete formData={formData} setFormData={setFormData} />
       </FormControl>
@@ -99,6 +88,7 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
         InputLabelProps={{
           shrink: true,
         }}
+        required
       >
         <MenuItem value="A">Nastasija</MenuItem>
         <MenuItem value="S">Reysge</MenuItem>
@@ -113,6 +103,7 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
           value={formData.amount}
           onChange={handleInputChange}
           type='number'
+          required
         />
       </FormControl>
       <TextField
@@ -126,6 +117,8 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
         InputLabelProps={{
           shrink: true,
         }}
+        defaultValue={50}
+        required
       >
         <MenuItem value="50">50%</MenuItem>
         <MenuItem value="100">100%</MenuItem>

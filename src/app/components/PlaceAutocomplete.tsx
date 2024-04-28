@@ -47,15 +47,15 @@ function PlaceAutocomplete({ formData, setFormData }: PlaceAutocompleteProps) {
         }
       }}
       filterOptions={(options, params) => {
-        const filtered = filter(options, params);
-
+        const filtered = filter(options, params);   
         const { inputValue } = params;
         const isExisting = options.some((option: Place | string) => {
           if (typeof option === 'string') {
             return inputValue === option;
-          } else {
+          } else if (option) { // Add this check
             return inputValue === option.name;
           }
+          return false;
         });
         if (inputValue !== '' && !isExisting) {
           filtered.push({
@@ -70,7 +70,7 @@ function PlaceAutocomplete({ formData, setFormData }: PlaceAutocompleteProps) {
         if (typeof option === 'string') {
           return option;
         }
-        if (option.inputValue) {
+        if (option && option.inputValue) {
           return option.inputValue;
         }
         return option.name;
@@ -79,6 +79,7 @@ function PlaceAutocomplete({ formData, setFormData }: PlaceAutocompleteProps) {
       renderInput={(params) => <TextField {...params} name="place" label="Place" variant="outlined" InputLabelProps={{
         shrink: true,
       }}/>}
+      value={formData.place}
       freeSolo
       selectOnFocus
       clearOnBlur
