@@ -7,11 +7,14 @@ import { fetchPurchases } from './fetchPurchases';
 import { convertDate } from './formatUtils';
 import { stableSort, getComparator } from './sortingUtils';
 
-function PurchaseList() {
+interface PurchaseListProps {
+  initialPurchases: Purchase[];
+}
+
+function PurchaseList({ initialPurchases }: PurchaseListProps) {
   const [order, setOrder] = useState<SortingOrder>('asc');
   const [orderBy, setOrderBy] = useState<keyof Purchase>('purchaseDate');
-  const [purchases, setPurchases] = useState<Purchase[]>([]);
-
+  const [purchases, setPurchases] = useState<Purchase[]>(initialPurchases);
   useEffect(() => {
     fetchPurchases().then(setPurchases);
   }, []);
@@ -21,7 +24,9 @@ function PurchaseList() {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-
+  if (!purchases) {
+    return <div>Loading...</div>;
+  }
   return (
     <TableContainer component={Paper}>
       <Table aria-label="simple table">
@@ -61,3 +66,10 @@ function PurchaseList() {
 }
 
 export default PurchaseList;
+
+export async function getServerSideProps() {
+  const purchases = await fetchPurchases();
+  return {
+    props: { initialPurchases: purchases },
+  };
+}
