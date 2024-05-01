@@ -6,6 +6,7 @@ import { Purchase, SortingOrder } from './PurchaseTypes';
 import { fetchPurchases } from './fetchPurchases';
 import { convertDate } from './formatUtils';
 import { stableSort, getComparator } from './sortingUtils';
+import { usePurchaseContext } from '@/app/context/PurchaseContext';
 
 interface PurchaseListProps {
   initialPurchases: Purchase[];
@@ -15,9 +16,11 @@ function PurchaseList({ initialPurchases }: PurchaseListProps) {
   const [order, setOrder] = useState<SortingOrder>('asc');
   const [orderBy, setOrderBy] = useState<keyof Purchase>('purchaseDate');
   const [purchases, setPurchases] = useState<Purchase[]>(initialPurchases);
+  const { refetchPurchases } = usePurchaseContext();
+
   useEffect(() => {
     fetchPurchases().then(setPurchases);
-  }, []);
+  }, [refetchPurchases]);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Purchase) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -66,10 +69,3 @@ function PurchaseList({ initialPurchases }: PurchaseListProps) {
 }
 
 export default PurchaseList;
-
-export async function getServerSideProps() {
-  const purchases = await fetchPurchases();
-  return {
-    props: { initialPurchases: purchases },
-  };
-}

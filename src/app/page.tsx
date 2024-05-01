@@ -1,15 +1,15 @@
-import type { NextPage } from 'next'
-import PurchaseForm from './components/PurchaseForm'
-import { Container } from '@mui/material'
-import PurchaseList from './components/Purchase/PurchaseList'
+import React from 'react';
+import { PurchaseProvider } from './context/PurchaseContext';
+import PurchaseList from './components/Purchase/PurchaseList';
+import PurchaseForm from './components/PurchaseForm';
 
-const Home: NextPage = () => {
+function App() {
   return (
-    <Container sx={{ bgcolor: 'white' }}>
+    <PurchaseProvider>
       <PurchaseForm />
       <PurchaseList />
-    </Container>
-  )
+    </PurchaseProvider>
+  );
 }
 
-export default Home
+export default App;

@@ -6,6 +6,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { fi } from 'date-fns/locale';
 import PlaceAutocomplete from './PlaceAutocomplete';
+import { usePurchaseContext } from '../context/PurchaseContext';
 
 interface PurchaseFormProps {
   // Interface details can be added here.
@@ -19,6 +20,7 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
     amount: '',
     splitPercentage: '',
   });
+  const { refetchPurchases } = usePurchaseContext();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -53,6 +55,8 @@ const PurchaseForm: React.FC<PurchaseFormProps> = () => {
         place: '', // Clear the 'Place' field
         amount: '', // Clear the 'amount' field
       });
+      refetchPurchases(); // Trigger refetch after successful submission
+
     } catch (error) {
       console.error('Failed to save purchase', error);
       // Handle error, e.g., show error message to user
