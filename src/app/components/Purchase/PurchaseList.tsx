@@ -1,44 +1,39 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-
-interface Purchase {
-  purchaseDate: string;
-  place: string;
-  buyer: string;
-  amount: number;
-  splitPercentage: number;
-}
-
-type Order = 'asc' | 'desc';
-
-
-const convertDate = (date: string) => {
-  const dateObj = new Date(date);
-  return `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
-}
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TableSortLabel } from '@mui/material';
+import { Purchase, SortingOrder } from './PurchaseTypes';
+import { fetchPurchases } from './fetchPurchases';
+import { convertDate } from './formatUtils';
+import { stableSort, getComparator } from './sortingUtils';
 
 function PurchaseList() {
+  const [order, setOrder] = useState<SortingOrder>('asc');
+  const [orderBy, setOrderBy] = useState<keyof Purchase>('purchaseDate');
   const [purchases, setPurchases] = useState<Purchase[]>([]);
 
-  const fetchPurchases = () => {
-    fetch('/api/currentMonth')
-      .then(res => res.json())
-      .then(data => setPurchases(data))
-      .catch(err => console.error("Failed to fetch purchases:", err));
-  };
-
   useEffect(() => {
-    fetchPurchases();
+    fetchPurchases().then(setPurchases);
   }, []);
+
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Purchase) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
 
   return (
     <TableContainer component={Paper}>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Date</TableCell>
+            <TableSortLabel
+              active={orderBy === 'purchaseDate'}
+              direction={orderBy === 'purchaseDate' ? order : 'asc'}
+              onClick={(event) => handleRequestSort(event, 'purchaseDate')}
+            >
+              <TableCell>Date</TableCell>
+            </TableSortLabel>
             <TableCell>Place</TableCell>
             <TableCell>Buyer</TableCell>
             <TableCell align="right">Amount</TableCell>
@@ -47,7 +42,7 @@ function PurchaseList() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {purchases.map((purchase) => (
+          {stableSort(purchases, getComparator(order, orderBy)).map((purchase) => (
             <TableRow key={purchase.purchaseDate + purchase.place}>
               <TableCell component="th" scope="row">
               {convertDate(purchase.purchaseDate)}
